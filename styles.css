@@ -1,0 +1,60 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  font-family: sans-serif;
+}
+
+.page-shell {
+  width: min(100%, 1100px);
+  padding: 24px;
+}
+
+.layout {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+
+.controls {
+  text-align: center;
+}
+
+.metric-switch,
+.matchday-switches {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.table-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.sort-button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 8px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sort-indicator {
+  margin-left: 4px;
+}
+
+.metric-button {
+  cursor: pointer;
+}
+
+.metric-button.is-active {
+  border-color: #12253e;
+  background: #12253e;
+  color: #fff;
+}

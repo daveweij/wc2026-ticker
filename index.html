@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>World Cup 2026 Ticker</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <main class="layout">
+        <section class="controls" aria-label="Ticker controls">
+          <fieldset class="control-group">
+            <legend class="control-label">Selected Metric</legend>
+            <div class="metric-switch">
+              <button
+                type="button"
+                class="metric-button is-active"
+                data-metric="difference"
+              >
+                Expected Goal Difference
+              </button>
+              <button type="button" class="metric-button" data-metric="goals">
+                Expected Goals For
+              </button>
+              <button type="button" class="metric-button" data-metric="against">
+                Expected Goals Against
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="control-group">
+            <legend class="control-label">
+              Matchdays to include in Total column
+            </legend>
+            <div class="matchday-switches">
+              <label class="matchday-toggle" data-day="1">
+                <input type="checkbox" data-day="1" checked />
+                <span>MD1</span>
+              </label>
+              <label class="matchday-toggle" data-day="2">
+                <input type="checkbox" data-day="2" checked />
+                <span>MD2</span>
+              </label>
+              <label class="matchday-toggle" data-day="3">
+                <input type="checkbox" data-day="3" checked />
+                <span>MD3</span>
+              </label>
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="table-panel" aria-live="polite">
+          <div class="table-wrap" id="table-wrap">
+            <div class="loading-state">Loading ticker data...</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./index.js"></script>
+  </body>
+</html>

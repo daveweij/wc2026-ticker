@@ -1,0 +1,13 @@
+{
+  "name": "wc26-ticker",
+  "version": "1.0.0",
+  "description": "ticker for the World Cup 2026 group stage",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
