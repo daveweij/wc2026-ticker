@@ -35,6 +35,10 @@ body {
   width: 100%;
 }
 
+.number-cell {
+  text-align: center;
+}
+
 .sort-button {
   appearance: none;
   border: 0;

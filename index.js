@@ -142,6 +142,7 @@ function compareTeams(leftTeam, rightTeam) {
 }
 
 function buildTableMarkup(sortedTeams) {
+  const columnScales = buildColumnScales(sortedTeams, state.metric);
   const headerMarkup = MATCHDAY_COLUMNS.map((column, index) => {
     const day = index + 1;
     const isInactive = !state.selectedMatchdays.has(day);
@@ -156,15 +157,27 @@ function buildTableMarkup(sortedTeams) {
         const cellClass = state.selectedMatchdays.has(day)
           ? "number-cell"
           : "number-cell is-inactive-day";
+        const backgroundColor = getHeatmapColor(
+          value,
+          columnScales[column],
+          state.metric,
+        );
 
-        return `<td class="${cellClass}">${formatNumber(value)}</td>`;
+        return `<td class="${cellClass}" style="background-color: ${backgroundColor}">${formatNumber(value)}</td>`;
       }).join("");
+
+      const totalValue = getColumnValue(team, state.metric, "total");
+      const totalBackgroundColor = getHeatmapColor(
+        totalValue,
+        columnScales.total,
+        state.metric,
+      );
 
       return `
       <tr>
         <td class="team-cell">${escapeHtml(team.team)}</td>
         ${perDayMarkup}
-        <td class="number-cell">${formatNumber(getColumnValue(team, state.metric, "total"))}</td>
+        <td class="number-cell" style="background-color: ${totalBackgroundColor}">${formatNumber(totalValue)}</td>
       </tr>
     `;
     })
@@ -233,6 +246,56 @@ function getColumnValue(team, metric, column) {
 
   const dayIndex = Number(column.replace("md", "")) - 1;
   return values[dayIndex];
+}
+
+function buildColumnScales(teams, metric) {
+  const matchdayValues = teams.flatMap((team) =>
+    MATCHDAY_COLUMNS.map((column) => getColumnValue(team, metric, column)),
+  );
+  const totalValues = teams.map((team) =>
+    getColumnValue(team, metric, "total"),
+  );
+  const matchdayScale = {
+    min: Math.min(...matchdayValues),
+    max: Math.max(...matchdayValues),
+  };
+
+  return {
+    md1: matchdayScale,
+    md2: matchdayScale,
+    md3: matchdayScale,
+    total: {
+      min: Math.min(...totalValues),
+      max: Math.max(...totalValues),
+    },
+  };
+}
+
+function getHeatmapColor(value, scale, metric) {
+  if (!scale || scale.min === scale.max) {
+    return "rgb(255 255 255)";
+  }
+
+  let normalized = (value - scale.min) / (scale.max - scale.min);
+
+  if (metric === "against") {
+    normalized = 1 - normalized;
+  }
+
+  if (normalized <= 0.5) {
+    return mixColors([244, 48, 68], [255, 255, 255], normalized / 0.5);
+  }
+
+  return mixColors([255, 255, 255], [38, 191, 68], (normalized - 0.5) / 0.5);
+}
+
+function mixColors(startColor, endColor, weight) {
+  const channels = startColor.map((channel, index) => {
+    const blended = channel + (endColor[index] - channel) * weight;
+    return Math.round(blended);
+  });
+
+  return `rgb(${channels.join(" ")})`;
 }
 
 function toTeamRecord(row) {
