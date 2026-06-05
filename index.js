@@ -257,6 +257,7 @@ function buildColumnScales(teams, metric) {
   );
   const matchdayScale = {
     min: Math.min(...matchdayValues),
+    midpoint: getMedian(matchdayValues),
     max: Math.max(...matchdayValues),
   };
 
@@ -266,6 +267,7 @@ function buildColumnScales(teams, metric) {
     md3: matchdayScale,
     total: {
       min: Math.min(...totalValues),
+      midpoint: getMedian(totalValues),
       max: Math.max(...totalValues),
     },
   };
@@ -276,17 +278,35 @@ function getHeatmapColor(value, scale, metric) {
     return "rgb(255 255 255)";
   }
 
-  let normalized = (value - scale.min) / (scale.max - scale.min);
-
   if (metric === "against") {
-    normalized = 1 - normalized;
+    return getMedianPivotColor(scale.max - value, {
+      min: 0,
+      midpoint: scale.max - scale.midpoint,
+      max: scale.max - scale.min,
+    });
   }
 
-  if (normalized <= 0.5) {
-    return mixColors([244, 48, 68], [255, 255, 255], normalized / 0.5);
+  return getMedianPivotColor(value, scale);
+}
+
+function getMedianPivotColor(value, scale) {
+  if (value <= scale.midpoint) {
+    const span = scale.midpoint - scale.min;
+
+    if (span === 0) {
+      return "rgb(255 255 255)";
+    }
+
+    return mixColors([244, 48, 68], [255, 255, 255], (value - scale.min) / span);
   }
 
-  return mixColors([255, 255, 255], [38, 191, 68], (normalized - 0.5) / 0.5);
+  const span = scale.max - scale.midpoint;
+
+  if (span === 0) {
+    return "rgb(255 255 255)";
+  }
+
+  return mixColors([255, 255, 255], [38, 191, 68], (value - scale.midpoint) / span);
 }
 
 function mixColors(startColor, endColor, weight) {
@@ -296,6 +316,17 @@ function mixColors(startColor, endColor, weight) {
   });
 
   return `rgb(${channels.join(" ")})`;
+}
+
+function getMedian(values) {
+  const sortedValues = [...values].sort((left, right) => left - right);
+  const middleIndex = Math.floor(sortedValues.length / 2);
+
+  if (sortedValues.length % 2 === 1) {
+    return sortedValues[middleIndex];
+  }
+
+  return (sortedValues[middleIndex - 1] + sortedValues[middleIndex]) / 2;
 }
 
 function toTeamRecord(row) {
